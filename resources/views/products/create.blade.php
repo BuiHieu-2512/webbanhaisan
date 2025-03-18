@@ -75,12 +75,24 @@
     <header>
         <h1>Tạo Mới Sản Phẩm</h1>
     </header>
+    @if (session('success'))
+    <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0;">
+        {{ session('error') }}
+    </div>
+@endif
+
     <div class="container">
         <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label for="name">Tên</label>
-                <input id="name" type="text" name="name" required autofocus>
+                <input id="name" type="text" name="name"  autofocus>
                 @error('name')
                     <span>{{ $message }}</span>
                 @enderror
@@ -94,7 +106,7 @@
             </div>
             <div class="form-group">
                 <label for="price">Giá</label>
-                <input id="price" type="text" name="price" required>
+                <input id="price" type="text" name="price" >
                 @error('price')
                     <span>{{ $message }}</span>
                 @enderror
@@ -107,11 +119,17 @@
             <div class="form-group">
                 <label for="discount_start_date">Ngày bắt đầu</label>
                 <input id="discount_start_date" type="date" name="discount_start_date" value="{{ old('discount_start_date', $product->discount_start_date ?? '') }}">
+                @error('discount_start_date')
+                    <span>{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-group">
                 <label for="discount_end_date">Ngày kết thúc</label>
                 <input id="discount_end_date" type="date" name="discount_end_date" value="{{ old('discount_end_date', $product->discount_end_date ?? '') }}">
+                @error('discount_end_date')
+                    <span>{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="form-group">
@@ -130,11 +148,28 @@
             </div>
             <div class="form-group">
                 <label for="stock">Số lượng</label>
-                <input id="stock" type="number" name="stock" required>
+                <input id="stock" type="number" name="stock" >
                 @error('stock')
                     <span>{{ $message }}</span>
                 @enderror
             </div>
+
+            <div class="form-group">
+    <label for="weight_id">Cân nặng</label>
+    <select id="weight_id" name="weight_id" required>
+        <option value="" disabled selected>-- Chọn cân nặng --</option>
+        @foreach ($weights as $weight)
+            <option value="{{ $weight->id }}">
+                {{ $weight->name }} ({{ $weight->value }} kg)
+            </option>
+        @endforeach
+    </select>
+    @error('weight_id')
+        <span style="color: red;">{{ $message }}</span>
+    @enderror
+</div>
+
+
             <div class="form-group">
                 <label for="category_id">Danh mục</label>
                 <select id="category_id" name="category_id" required>
@@ -152,5 +187,42 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let today = new Date().toISOString().split("T")[0];
+
+            let startDateInput = document.getElementById("discount_start_date");
+            let endDateInput = document.getElementById("discount_end_date");
+
+            if (startDateInput) {
+                startDateInput.setAttribute("min", today);
+                startDateInput.addEventListener("change", function () {
+                    if (startDateInput.value < today) {
+                        alert("Ngày bắt đầu giảm giá không thể là quá khứ!");
+                        startDateInput.value = "";
+                    }
+                    if (endDateInput.value && endDateInput.value < startDateInput.value) {
+                        alert("Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
+                        endDateInput.value = "";
+                    }
+                });
+            }
+
+            if (endDateInput) {
+                endDateInput.setAttribute("min", today);
+                endDateInput.addEventListener("change", function () {
+                    if (endDateInput.value < today) {
+                        alert("Ngày kết thúc giảm giá không thể là quá khứ!");
+                        endDateInput.value = "";
+                    }
+                    if (startDateInput.value && endDateInput.value < startDateInput.value) {
+                        alert("Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
+                        endDateInput.value = "";
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

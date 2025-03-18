@@ -13,7 +13,7 @@
             100% { background-color: #ffffff; }
         }
         body {
-            background-image: url('https://cdn.tgdd.vn/2020/08/CookProduct/Untitled-1-1200x676-33.jpg'); /* Thay thế bằng URL hình nền của bạn */
+            background-image: url('https://cdn.tgdd.vn/2020/08/CookProduct/Untitled-1-1200x676-33.jpg'); 
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -34,6 +34,31 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             animation: colorChange 10s infinite;
+            position: relative;
+        }
+        .alert {
+            padding: 15px;
+            background-color: #f8d7da; 
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            position: relative;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .alert .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #721c24;
+        }
+        .alert.fade-out {
+            opacity: 0;
         }
         .form-group {
             display: flex;
@@ -79,14 +104,24 @@
     </style>
 </head>
 <body>
+
     <div class="container">
         <h2>Đăng nhập</h2>
+
+        <!-- Hiển thị thông báo lỗi -->
+        @if (session('error'))
+            <div class="alert" id="error-alert">
+                <button class="close-btn" onclick="closeAlert()"></button>
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus>
+                <input id="email" type="email" name="email" value="{{ old('email') }}"  autofocus>
                 @error('email')
                     <span style="color: red;">{{ $message }}</span>
                 @enderror
@@ -94,7 +129,7 @@
 
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
-                <input id="password" type="password" name="password" required>
+                <input id="password" type="password" name="password" >
                 @error('password')
                     <span style="color: red;">{{ $message }}</span>
                 @enderror
@@ -104,5 +139,22 @@
         </form>
         <a href="{{ route('register') }}" class="register-link">Chưa có tài khoản? Đăng ký tại đây</a>
     </div>
+
+    <script>
+        function closeAlert() {
+            document.getElementById("error-alert").classList.add("fade-out");
+            setTimeout(() => {
+                document.getElementById("error-alert").style.display = "none";
+            }, 500);
+        }
+
+        // Tự động ẩn thông báo sau 5 giây
+        setTimeout(() => {
+            if (document.getElementById("error-alert")) {
+                closeAlert();
+            }
+        }, 5000);
+    </script>
+
 </body>
 </html>

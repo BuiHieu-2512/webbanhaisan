@@ -216,22 +216,32 @@
     margin: 5px 0; /* Giảm khoảng cách trong phần địa chỉ */
 }
 
-        .slider {
-            width: 100%;
-            overflow: hidden;
-        }
-        .slides {
-            display: flex;
-            transition: transform 0.5s ease;
-        }
-        .slide {
-            min-width: 100%;
-        }
-        .slide img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            cursor: pointer;
+.slider {
+    width: 100%;
+    max-width: 800px;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+
+
+.slider .slide img {
+    width: 100%;
+    height: 100%; /* Ảnh sẽ luôn vừa với slider */
+    object-fit: cover; /* Cắt ảnh nếu quá lớn */
+
         }
         .pagination {
             display: flex;
@@ -339,12 +349,41 @@
         font-size: 12px;
         font-weight: bold;
     }
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
+        .banner-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            overflow: hidden;
+            position: relative;
+        }
+        .banner-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .banner-wrapper img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .prev { left: 10px; }
+        .next { right: 10px; }
 
 
 .slider .slide:first-child {
     display: block; /* Hiển thị slide đầu tiên */
 }
+
 
     </style>
 </head>
@@ -354,7 +393,7 @@
        
         <nav>
         <div class="logo">
-    <img src=" https://cdn.discordapp.com/attachments/917951368101249097/1342163606455718040/Hieu_SeaFood_seafood_logo.png?ex=67b8a2c3&is=67b75143&hm=195eb1dcf6794120695b3fd41cdcf9cf314ad596fc9be4bb443d086caf6dfa78&" alt="ĐẢO HẢI SẢN" style="width: 100px; height: auto;">
+    <img src=" https://cdn.discordapp.com/attachments/1171456531158548508/1346373150534799473/Hieu_SeaFood_seafood_logo.png?ex=67c7f335&is=67c6a1b5&hm=d5ea27f49d539d6fb915f80bcbe3ddd0ae37711992c4fab0c14dc73b50592e66&" alt="ĐẢO HẢI SẢN" style="width: 70px; height: auto;">
 </div>
 
 
@@ -421,9 +460,7 @@
         </li>
     @endif
 </ul>
-
-
-           
+         
         </nav>
     </header>
     <div class="container">
@@ -443,31 +480,25 @@
                     <li>Không có danh mục nào.</li>
                 @endif
             </ul>
-            <div class="pagination">
-                {{ $categories->links('vendor.pagination.custom') }}
-            </div>
+           
         </div>
         <div class="main-content">
-            <div class="slider">
-                <div class="slides">
-                    <div class="slide">
-                        <img src="https://product.hstatic.net/1000275435/product/5_optimized_1cc4d009aaad4ee98300ad12591ecaaa_master.jpg" alt="Banner 1" onClick="openModal(this)">
-                    </div>
-                    <div class="slide">
-                        <img src="https://th.bing.com/th/id/OIP.cb7O7bHq7Arm6dNoVI4zYwHaEd?w=1600&h=964&rs=1&pid=ImgDetMain" alt="Banner 2" onClick="openModal(this)">
-                    </div>
-                    <div class="slide">
-                        <img src="https://bigbluefiji.com/wp-content/uploads/2017/09/fiji-charter-seafood-beach-bbq.jpg" alt="Banner 3" onClick="openModal(this)">
-                    </div>
+    <div class="slider">
+        <div class="slides">
+       
+
+            @foreach ($banners as $banner)
+                <div class="slide">
+                    <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner">
                 </div>
-            </div>
-            <div class="near-banner">
-                <img src="https://bigbluefiji.com/wp-content/uploads/2017/09/fiji-charter-seafood-beach-bbq.jpg" alt="Gần Banner" class="near-banner-image" onClick="openModal(this)">
-                <img src="https://bigbluefiji.com/wp-content/uploads/2017/09/fiji-charter-seafood-beach-bbq.jpg" alt="Gần Banner" class="near-banner-image" onClick="openModal(this)">
-                <img src="https://bigbluefiji.com/wp-content/uploads/2017/09/fiji-charter-seafood-beach-bbq.jpg" alt="Gần Banner" class="near-banner-image" onClick="openModal(this)">
-                <img src="https://bigbluefiji.com/wp-content/uploads/2017/09/fiji-charter-seafood-beach-bbq.jpg" alt="Gần Banner" class="near-banner-image" onClick="openModal(this)">
-            </div>
+            @endforeach
         </div>
+    </div>
+</div>
+
+</div>
+
+
     </div>
     <footer>
         <div class="footer-container">
@@ -533,24 +564,42 @@
     </script>
 
 <script>
-    // Chức năng tự động chuyển slide
     let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');  // Lấy tất cả các slide
-    const totalSlides = slides.length;  // Số lượng slide
+const slides = document.querySelectorAll('.slide');
 
-    // Hàm chuyển đến slide tiếp theo
-    function nextSlide() {
-        slides[currentSlide].style.display = 'none'; // Ẩn slide hiện tại
-        currentSlide = (currentSlide + 1) % totalSlides; // Tính chỉ số slide tiếp theo
-        slides[currentSlide].style.display = 'block'; // Hiển thị slide tiếp theo
-    }
+function changeSlide(n) {
+    showSlide(currentSlide += n);
+}
 
-    // Set interval để tự động chuyển slide mỗi 3 giây
-    setInterval(nextSlide, 3000);
+function showSlide(n) {
+    if (n >= slides.length) currentSlide = 0;
+    if (n < 0) currentSlide = slides.length - 1;
 
-    // Hiển thị slide đầu tiên ngay khi tải trang
-    slides[currentSlide].style.display = 'block';
+    slides.forEach((slide, index) => {
+        slide.style.display = (index === currentSlide) ? 'block' : 'none';
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    showSlide(currentSlide);
+    setInterval(() => changeSlide(1), 3000);
+});
+
+function openModal(src) {
+    const modal = document.getElementById("myModal");
+    const modalImg = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImg.src = src;
+}
+
+function closeModal() {
+    const modal = document.getElementById("myModal");
+    modal.style.display = "none";
+}
+
+
 </script>
+
 
 </body>
 </html>

@@ -196,51 +196,81 @@
     </header>
 
     <div class="container">
-        <div class="main-content">
-            @if($products->isNotEmpty())
+    <div class="main-content">
+        @if($products->isNotEmpty())
             <ul>
-    @foreach($products as $product)
-        <li>
-            <div class="product-card">
-                <img src="{{ asset('storage/' . $product->image_url) }}" alt="Image" width="150" height="150" onclick="openModal(this)">
-                <p>{{ $product->name }}</p>
+                @foreach($products as $product)
+                    <li>
+                        <div class="product-card">
+                            <img src="{{ asset('storage/' . $product->image_url) }}" alt="Image" width="150" height="150" onclick="openModal(this)">
+                            <p>{{ $product->name }}</p>
 
-                @if ($product->discount_percentage > 0 && now()->between($product->discount_start_date, $product->discount_end_date))
-                    @php
-                        $discountAmount = ($product->price * $product->discount_percentage) / 100;
-                        $finalPrice = $product->price - $discountAmount;
-                    @endphp
-                    <p>Giá gốc: <s>{{ number_format($product->price, 0, ',', '.') }} VNĐ</s></p>
-                    <p>Giá sau giảm: <strong style="color: red;">{{ number_format($finalPrice, 0, ',', '.') }} VNĐ</strong></p>
-                    <p style="color: green;">Giảm: {{ $product->discount_percentage }}% ({{ number_format($discountAmount, 0, ',', '.') }} VNĐ)</p>
-                    <p><strong>Thời gian giảm giá:</strong> {{ date('d/m/Y', strtotime($product->discount_start_date)) }} - {{ date('d/m/Y', strtotime($product->discount_end_date)) }}</p>
-                @else
-                    <p>Giá: {{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
-                @endif
+                            {{-- Hiển thị cân nặng --}}
+                            <p>
+                                Cân nặng: 
+                                @if ($product->weight)
+                                    {{ $product->weight->value }} kg
+                                @else
+                                    Không có
+                                @endif
+                            </p>
 
+                            @if ($product->discount_percentage > 0 && now()->between($product->discount_start_date, $product->discount_end_date))
+                                @php
+                                    $discountAmount = ($product->price * $product->discount_percentage) / 100;
+                                    $finalPrice = $product->price - $discountAmount;
+                                @endphp
+                                <p>Giá gốc: <s>{{ number_format($product->price, 0, ',', '.') }} VNĐ</s></p>
+                                <p>Giá sau giảm: <strong style="color: red;">{{ number_format($finalPrice, 0, ',', '.') }} VNĐ</strong></p>
+                                <p style="color: green;">Giảm: {{ $product->discount_percentage }}% ({{ number_format($discountAmount, 0, ',', '.') }} VNĐ)</p>
+                                <p><strong>Thời gian giảm giá:</strong> {{ date('d/m/Y', strtotime($product->discount_start_date)) }} - {{ date('d/m/Y', strtotime($product->discount_end_date)) }}</p>
+                            @else
+                                <p>Giá: {{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
+                            @endif
 
-                <div class="button-container">
-                    <a href="{{ route('product.show', ['id' => $product->id]) }}" class="btn">Xem Chi Tiết</a>
+                            <div class="button-container">
+                                <a href="{{ route('product.show', ['id' => $product->id]) }}" class="btn">Xem Chi Tiết</a>
 
-                    @if(Auth::check())
-                        <form method="POST" action="{{ route('cart.add') }}">
-                            @csrf
-                            <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <button type="submit" class="btn">Thêm vào giỏ hàng</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="btn">Đăng nhập để mua hàng</a>
-                    @endif
-                </div>
-            </div>
-        </li>
-    @endforeach
-</ul>
-            @else
-                <p>Không có sản phẩm nào trong danh mục này.</p>
-            @endif
-        </div>
+                                @if(Auth::check())
+                                    @if ($product->stock > 0)
+                                        <form method="POST" action="{{ route('cart.add') }}">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                            <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                                        </form>
+                                    @else
+                                        <button type="button" class="btn btn-danger" onclick="showOutOfStockAlert()">
+                                            Hết hàng
+                                        </button>
+                                    @endif
+
+                                    {{-- Nhúng thư viện SweetAlert2 --}}
+                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                    <script>
+                                        function showOutOfStockAlert() {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Sản phẩm đã hết hàng!',
+                                                text: 'Rất tiếc! Sản phẩm này hiện không còn trong kho. Vui lòng quay lại sau.',
+                                                confirmButtonText: 'OK',
+                                                confirmButtonColor: '#d33'
+                                            });
+                                        }
+                                    </script>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn">Đăng nhập để mua hàng</a>
+                                @endif
+                            </div>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        @else
+            <p>Không có sản phẩm nào trong danh mục này.</p>
+        @endif
     </div>
+</div>
+
 
     <footer>
         <p>&copy; 2025 Hải Sản Tươi Sống. All rights reserved.</p>

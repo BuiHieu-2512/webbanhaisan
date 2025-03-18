@@ -86,7 +86,7 @@
 
             <div class="form-group">
                 <label for="username">Tên</label>
-                <input id="username" type="text" name="username" value="{{ old('username') }}" required autofocus>
+                <input id="username" type="text" name="username" value="{{ old('username') }}"  autofocus>
                 @error('username')
                     <span style="color: red;">{{ $message }}</span>
                 @enderror
@@ -94,7 +94,7 @@
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" >
                 @error('email')
                     <span style="color: red;">{{ $message }}</span>
                 @enderror
@@ -102,7 +102,7 @@
 
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
-                <input id="password" type="password" name="password" required>
+                <input id="password" type="password" name="password" >
                 @error('password')
                     <span style="color: red;">{{ $message }}</span>
                 @enderror
@@ -110,7 +110,7 @@
 
             <div class="form-group">
                 <label for="password_confirmation">Xác nhận mật khẩu</label>
-                <input id="password_confirmation" type="password" name="password_confirmation" required>
+                <input id="password_confirmation" type="password" name="password_confirmation" >
             </div>
 
             <button type="submit">Đăng ký</button>

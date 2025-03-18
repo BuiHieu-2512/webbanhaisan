@@ -33,6 +33,11 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserNewsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\AdminContactController;
+use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\VNPayController;
+use App\Http\Controllers\WeightController;
+
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -161,6 +166,33 @@ Route::get('/contact', [ContactController::class, 'create'])->name('contact.crea
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::get('/admin/contacts/{id}/resend', [ContactController::class, 'resendEmail'])->name('admin.contacts.resend');
+
+
+Route::put('/users/{user}/lock', [UsersController::class, 'toggleLock'])->name('admin.users.lock');
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/users', [UsersController::class, 'index'])->name('admin.users.index'); 
+    Route::get('/users/create', [UsersController::class, 'create'])->name('admin.users.create');
+    Route::post('/users', [UsersController::class, 'store'])->name('admin.users.store');
+    Route::get('/users/{user}/edit', [UsersController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/users/{user}', [UsersController::class, 'update'])->name('admin.users.update');
+    Route::delete('/users/{user}', [UsersController::class, 'destroy'])->name('admin.users.destroy');
+});
+
+
+
+Route::prefix('admin')->name('admin.')->middleware('auth', 'admin')->group(function () {
+    Route::resource('banners', BannerController::class);
+    
+});
+
+
+Route::post('/vnpay-payment', [VNPayController::class, 'createPayment'])->name('vnpay.payment');
+Route::get('/vnpay/return', [VnpayController::class, 'vnpayReturn'])->name('vnpay.return');
+
+
+Route::resource('weights', WeightController::class);
+
 
 
 

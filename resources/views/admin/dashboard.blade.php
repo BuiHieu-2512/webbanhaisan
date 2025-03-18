@@ -109,27 +109,31 @@
         <h1><i class="fa-solid fa-fish"></i> Chợ Hải Sản Tươi Sống - Admin</h1>
     </header>
     <div class="container">
-        <nav>
-            <a href="#"><i class="fa-solid fa-house"></i> Trang Chủ</a>
-            <a href="{{ route('categories.index') }}"><i class="fa-solid fa-layer-group"></i> Danh mục</a>
-            <a href="{{ route('products.index') }}"><i class="fa-solid fa-fish"></i> Sản phẩm</a>
-            <a href="{{ route('admin.orders.index') }}"><i class="fa-solid fa-receipt"></i> Quản lí Đơn Hàng</a>
-            
-            <!-- Thêm quản lý tin tức -->
-            <a href="{{ route('news.index') }}"><i class="fa-solid fa-newspaper"></i> Quản lý Tin Tức</a>
-            
-            <!-- Thêm quản lý liên hệ -->
-            <a href="{{ route('admin.contacts.index') }}">
-                <i class="fa-solid fa-address-book"></i> Quản lý Liên Hệ
-            </a>
-            
-            <form method="POST" action="{{ route('logout') }}" class="logout-form" style="display: inline;">
-                @csrf
-                <button type="submit" class="logout-btn">
-                    <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
-                </button>
-            </form>
-        </nav>
+    <nav>
+    <a href="#"><i class="fa-solid fa-house"></i> Trang Chủ</a>
+    <a href="{{ route('categories.index') }}"><i class="fa-solid fa-layer-group"></i> Danh mục</a>
+    <a href="{{ route('products.index') }}"><i class="fa-solid fa-fish"></i> Sản phẩm</a>
+    <a href="{{ route('admin.orders.index') }}"><i class="fa-solid fa-receipt"></i> Quản lí Đơn Hàng</a>
+    <a href="{{ route('weights.index') }}"><i class="fa-solid fa-receipt"></i> Quản lí Kích cỡ</a>
+    <a href="{{ route('admin.banners.index') }}"><i class="fa-solid fa-image"></i> Quản lý Banner</a>
+
+    <!-- Thêm quản lý người dùng -->
+    <a href="{{ route('admin.users.index') }}"><i class="fa-solid fa-users"></i> Quản lý Người Dùng</a>
+
+    <!-- Thêm quản lý tin tức -->
+    <a href="{{ route('news.index') }}"><i class="fa-solid fa-newspaper"></i> Quản lý Tin Tức</a>
+    
+    <!-- Thêm quản lý liên hệ -->
+    <a href="{{ route('admin.contacts.index') }}"><i class="fa-solid fa-address-book"></i> Quản lý Liên Hệ</a>
+    
+    <form method="POST" action="{{ route('logout') }}" class="logout-form" style="display: inline;">
+        @csrf
+        <button type="submit" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+        </button>
+    </form>
+</nav>
+
 
         <div class="main-content">
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

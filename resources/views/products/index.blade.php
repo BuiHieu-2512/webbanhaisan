@@ -62,57 +62,69 @@
         <h1>Quản Lý Sản Phẩm - Chợ Hải Sản</h1>
     </header>
     <div class="container">
-        <a class="btn" href="{{route('admin.dashboard')}}">Quay lại</a>
-        <a class="btn" href="{{ route('products.create') }}">Tạo Mới Sản Phẩm</a>
+    <a class="btn" href="{{ route('admin.dashboard') }}">Quay lại</a>
+    <a class="btn" href="{{ route('products.create') }}">Tạo Mới Sản Phẩm</a>
 
-        <h2>Danh Sách Sản Phẩm</h2>
-        <table>
-            <thead>
+    <h2>Danh Sách Sản Phẩm</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Mô Tả</th>
+                <th>Giá</th>
+                <th>Giảm Giá</th>
+                <th>Hình Ảnh</th>
+                <th>Số Lượng</th>
+                <th>Cân nặng</th>
+                <th>Danh Mục</th>
+                <th>Hành Động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($products as $product)
                 <tr>
-                    <th>Tên</th>
-                    <th>Mô Tả</th>
-                    <th>Giá</th>
-                    <th>Giảm Giá</th>
-                    <th>Hình Ảnh</th>
-                    <th>Số Lượng</th>
-                    <th>Danh Mục</th>
-                    <th>Hành Động</th>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->description }}</td>
+                    <td>{{ number_format($product->price, 0, ',', '.') }} VNĐ</td>
+                    <td>
+                        @if ($product->discount_percentage && $product->discount_percentage > 0)
+                            <span style="color: red;">-{{ $product->discount_percentage }}%</span>
+                            <br>
+                            <small>Bắt đầu: {{ $product->discount_start_date }}</small><br>
+                            <small>Kết thúc: {{ $product->discount_end_date }}</small>
+                        @else
+                            Không giảm giá
+                        @endif
+                    </td>
+                    <td>
+                        <img src="{{ asset('storage/' . $product->image_url) }}" alt="Image" width="50" height="50">
+                    </td>
+                    <td>{{ $product->stock }}</td>
+                    <td>
+    @if ($product->weight)
+         {{ $product->weight->value }} kg
+    @else
+        Không có
+    @endif
+</td>
+
+                    <td>{{ $product->category->name }}</td>
+                    <td>
+                        <a class="btn btn-small" href="{{ route('products.edit', $product->id) }}">Chỉnh Sửa</a>
+                        <form method="POST" action="{{ route('products.destroy', $product->id) }}" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-small" type="submit">Xóa</button>
+                        </form>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach ($products as $product)
-                    <tr>
-                        <td>{{ $product->name }}</td>
-                        <td>{{ $product->description }}</td>
-                        <td>{{ number_format($product->price, 0, ',', '.') }} VNĐ</td>
-                        <td>
-                            @if($product->discount_percentage && $product->discount_percentage > 0)
-                                <span style="color: red;">-{{ $product->discount_percentage }}%</span>
-                                <br>
-                                <small>Bắt đầu: {{ $product->discount_start_date }}</small><br>
-                                <small>Kết thúc: {{ $product->discount_end_date }}</small>
-                            @else
-                                Không giảm giá
-                            @endif
-                        </td>
-                        <td><img src="{{ asset('storage/' . $product->image_url) }}" alt="Image" width="50" height="50"></td>
-                        <td>{{ $product->stock }}</td>
-                        <td>{{ $product->category->name }}</td>
-                        <td>
-                            <a class="btn btn-small" href="{{ route('products.edit', $product->id) }}">Chỉnh Sửa</a>
-                            <form method="POST" action="{{ route('products.destroy', $product->id) }}" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-small" type="submit">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div class="pagination">
-            {{ $products->links('vendor.pagination.custom') }}
-        </div>
+            @endforeach
+        </tbody>
+    </table>
+    <div class="pagination">
+        {{ $products->links('vendor.pagination.custom') }}
     </div>
+</div>
+
 </body>
 </html>

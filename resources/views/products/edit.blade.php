@@ -75,84 +75,129 @@
     <header>
         <h1>Chỉnh Sửa Sản Phẩm</h1>
     </header>
-    <div class="container">
-        <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="form-group">
-                <label for="name">Tên</label>
-                <input id="name" type="text" name="name" value="{{ $product->name }}" required>
-                @error('name')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-group">
-                <label for="description">Mô tả</label>
-                <textarea id="description" name="description">{{ $product->description }}</textarea>
-                @error('description')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-group">
-                <label for="price">Giá</label>
-                <input id="price" type="text" name="price" value="{{ $product->price }}" required>
-                @error('price')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-group">
-                <label for="discount_percentage">Giảm giá (%)</label>
-                <input id="discount_percentage" type="number" name="discount_percentage" value="{{ old('discount_percentage', $product->discount_percentage ?? '') }}" min="0" max="100">
-            </div>
-
-            <div class="form-group">
-                <label for="discount_start_date">Ngày bắt đầu</label>
-                <input id="discount_start_date" type="date" name="discount_start_date" value="{{ old('discount_start_date', $product->discount_start_date ?? '') }}">
-            </div>
-
-            <div class="form-group">
-                <label for="discount_end_date">Ngày kết thúc</label>
-                <input id="discount_end_date" type="date" name="discount_end_date" value="{{ old('discount_end_date', $product->discount_end_date ?? '') }}">
-            </div>
-
-            <div class="form-group">
-                <label for="image_url">Hình ảnh</label>
-                <input id="image_url" type="file" name="image_url" accept="image/*">
-                @error('image_url')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-group">
-                <label for="certification_image_url">Hình ảnh chứng nhận</label>
-                <input id="certification_image_url" type="file" name="certification_image_url" accept="image/*">
-                @error('certification_image_url')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-group">
-                <label for="stock">Số lượng</label>
-                <input id="stock" type="number" name="stock" value="{{ $product->stock }}" required>
-                @error('stock')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-group">
-                <label for="category_id">Danh mục</label>
-                <select id="category_id" name="category_id" required>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                    @endforeach
-                </select>
-                @error('category_id')
-                    <span>{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="form-buttons">
-                <a href="{{ route('products.index') }}" class="back-btn">Quay lại</a>
-                <button type="submit">Cập Nhật</button>
-            </div>
-        </form>
+    @if (session('success'))
+    <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0;">
+        {{ session('success') }}
     </div>
+@endif
+
+@if (session('error'))
+    <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0;">
+        {{ session('error') }}
+    </div>
+@endif
+
+<div class="container">
+    <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <div class="form-group">
+            <label for="name">Tên</label>
+            <input id="name" type="text" name="name" value="{{ $product->name }}">
+            @error('name')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="description">Mô tả</label>
+            <textarea id="description" name="description">{{ $product->description }}</textarea>
+            @error('description')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="price">Giá</label>
+            <input id="price" type="text" name="price" value="{{ $product->price }}">
+            @error('price')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="discount_percentage">Giảm giá (%)</label>
+            <input id="discount_percentage" type="number" name="discount_percentage" 
+                value="{{ old('discount_percentage', $product->discount_percentage ?? '') }}" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+            <label for="discount_start_date">Ngày bắt đầu</label>
+            <input id="discount_start_date" type="date" name="discount_start_date" 
+                value="{{ old('discount_start_date', $product->discount_start_date ?? '') }}">
+        </div>
+
+        <div class="form-group">
+            <label for="discount_end_date">Ngày kết thúc</label>
+            <input id="discount_end_date" type="date" name="discount_end_date" 
+                value="{{ old('discount_end_date', $product->discount_end_date ?? '') }}">
+        </div>
+
+        <div class="form-group">
+            <label for="image_url">Hình ảnh</label>
+            <input id="image_url" type="file" name="image_url" accept="image/*">
+            @error('image_url')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="certification_image_url">Hình ảnh chứng nhận</label>
+            <input id="certification_image_url" type="file" name="certification_image_url" accept="image/*">
+            @error('certification_image_url')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="stock">Số lượng</label>
+            <input id="stock" type="number" name="stock" value="{{ $product->stock }}">
+            @error('stock')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+        {{-- 🔹 Thêm phần chọn Cân nặng --}}
+        <div class="form-group">
+            <label for="weight_id">Cân nặng</label>
+            <select id="weight_id" name="weight_id">
+                @foreach ($weights as $weight)
+                    <option value="{{ $weight->id }}" 
+                        {{ $product->weight_id == $weight->id ? 'selected' : '' }}>
+                        {{ $weight->value }} kg
+                    </option>
+                @endforeach
+            </select>
+            @error('weight_id')
+                <span>{{ $message }}</span>
+            @enderror
+
+
+        <div class="form-group">
+            <label for="category_id">Danh mục</label>
+            <select id="category_id" name="category_id">
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}" 
+                        {{ $product->category_id == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('category_id')
+                <span>{{ $message }}</span>
+            @enderror
+        </div>
+
+        
+        </div>
+
+        <div class="form-buttons">
+            <a href="{{ route('products.index') }}" class="back-btn">Quay lại</a>
+            <button type="submit">Cập Nhật</button>
+        </div>
+    </form>
+</div>
+
 </body>
 
 </html>

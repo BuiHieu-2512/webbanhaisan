@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('discount_percentage')->nullable();
             $table->date('discount_start_date')->nullable();
             $table->date('discount_end_date')->nullable();
-
+            $table->foreignId('weight_id')->constrained('weights')->onDelete('cascade');
             $table->string('image_url')->nullable();
             $table->string('certification_image_url')->nullable();
             $table->integer('stock');

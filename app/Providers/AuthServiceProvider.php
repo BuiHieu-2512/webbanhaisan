@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -24,7 +25,13 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        //
-    }
+    
+        Auth::viaRequest('custom', function ($request) {
+            $user = User::where('email', $request->email)->first();
+            if ($user && $user->is_locked) {
+                return null; // Không cho phép đăng nhập
+            }
+            return $user;
+        });
+}
 }

@@ -189,51 +189,84 @@
     </header>
 
     <div class="container">
-        <!-- Hiển thị thông báo thêm vào giỏ hàng -->
-        @if(session('success'))
-            <div class="alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="left-section">
-            <h1>{{ $product->name }}</h1>
-            <p>Số lượng: {{ $product->stock }}</p>
-            <p>Danh mục: {{ $product->category->name }}</p>
-            <div class="product-details">
-            <p>{{ $product->description }}</p>
-                
-                @if ($product->discount_percentage > 0 && now()->between($product->discount_start_date, $product->discount_end_date))
-                    @php
-                        $discountAmount = ($product->price * $product->discount_percentage) / 100;
-                        $finalPrice = $product->price - $discountAmount;
-                    @endphp
-                    <p>Giá gốc: <s>{{ number_format($product->price, 0, ',', '.') }} VNĐ</s></p>
-                    <p>Giá sau giảm: <strong style="color: red;">{{ number_format($finalPrice, 0, ',', '.') }} VNĐ</strong></p>
-                    <p style="color: green;">Giảm: {{ $product->discount_percentage }}% ({{ number_format($discountAmount, 0, ',', '.') }} VNĐ)</p>
-                    <p><strong>Thời gian giảm giá:</strong> {{ date('d/m/Y', strtotime($product->discount_start_date)) }} - {{ date('d/m/Y', strtotime($product->discount_end_date)) }}</p>
-                @else
-                    <p>Giá: {{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
-                @endif
-
-                @if(Auth::check())
-                <form method="POST" action="{{ route('cart.add') }}">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <button type="submit" class="btn">Thêm vào giỏ hàng</button>
-                </form>
-                @else
-                    <a href="{{ route('login') }}" class="btn">Đăng nhập để mua hàng</a>
-                @endif
-            </div>
+    <!-- Hiển thị thông báo thêm vào giỏ hàng -->
+    @if(session('success'))
+        <div class="alert-success">
+            {{ session('success') }}
         </div>
-        <div class="right-section">
-            <div class="image-row">
-                <img src="{{ asset('storage/' . $product->image_url) }}" alt="Image" class="product-image" onclick="openModal(this)">
-                <img src="{{ asset('storage/' . $product->certification_image_url) }}" alt="Certification Image" class="certification-image" onclick="openModal(this)">
-            </div>
+    @endif
+
+    <div class="left-section">
+        <h1>{{ $product->name }}</h1>
+        <p>Số lượng: {{ $product->stock }}</p>
+        <p>Danh mục: {{ $product->category->name }}</p>
+
+        {{-- Hiển thị cân nặng --}}
+        <p>
+            Cân nặng: 
+            @if ($product->weight)
+                {{ $product->weight->value }} kg
+            @else
+                Không có
+            @endif
+        </p>
+
+        <div class="product-details">
+            <p>{{ $product->description }}</p>
+
+            @if ($product->discount_percentage > 0 && now()->between($product->discount_start_date, $product->discount_end_date))
+                @php
+                    $discountAmount = ($product->price * $product->discount_percentage) / 100;
+                    $finalPrice = $product->price - $discountAmount;
+                @endphp
+                <p>Giá gốc: <s>{{ number_format($product->price, 0, ',', '.') }} VNĐ</s></p>
+                <p>Giá sau giảm: <strong style="color: red;">{{ number_format($finalPrice, 0, ',', '.') }} VNĐ</strong></p>
+                <p style="color: green;">Giảm: {{ $product->discount_percentage }}% ({{ number_format($discountAmount, 0, ',', '.') }} VNĐ)</p>
+                <p><strong>Thời gian giảm giá:</strong> {{ date('d/m/Y', strtotime($product->discount_start_date)) }} - {{ date('d/m/Y', strtotime($product->discount_end_date)) }}</p>
+            @else
+                <p>Giá: {{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
+            @endif
+
+            @if(Auth::check())
+                @if ($product->stock > 0)
+                    <form method="POST" action="{{ route('cart.add') }}">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <button type="submit" class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    </form>
+                @else
+                    <button type="button" class="btn btn-danger" onclick="showOutOfStockAlert()">
+                        Hết hàng
+                    </button>
+                @endif
+
+                {{-- Nhúng thư viện SweetAlert2 --}}
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    function showOutOfStockAlert() {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Sản phẩm đã hết hàng!',
+                            text: 'Rất tiếc! Sản phẩm này hiện không còn trong kho. Vui lòng quay lại sau.',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#d33'
+                        });
+                    }
+                </script>
+            @else
+                <a href="{{ route('login') }}" class="btn">Đăng nhập để mua hàng</a>
+            @endif
         </div>
     </div>
+
+    <div class="right-section">
+        <div class="image-row">
+            <img src="{{ asset('storage/' . $product->image_url) }}" alt="Image" class="product-image" onclick="openModal(this)">
+            <img src="{{ asset('storage/' . $product->certification_image_url) }}" alt="Certification Image" class="certification-image" onclick="openModal(this)">
+        </div>
+    </div>
+</div>
+
 
     <footer>
         <p>&copy; 2025 Chợ Hải Sản. All rights reserved.</p>

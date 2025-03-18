@@ -25,6 +25,7 @@ class Product extends Model
         'certification_image_url',
         'stock',
         'category_id',
+        'weight_id',
     ];
 
     /**
@@ -58,4 +59,10 @@ public function getDiscountedPriceAttribute()
     }
     return $this->price;
 }
+
+public function weight()
+    {
+        return $this->belongsTo(Weight::class, 'weight_id');
+    }
+
 }

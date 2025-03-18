@@ -9,6 +9,27 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthenticatedSessionController extends Controller
 {
+
+    public function login(Request $request)
+{
+    $credentials = $request->only('email', 'password');
+
+    $user = \App\Models\User::where('email', $request->email)->first();
+
+    if (!$user) {
+        return back()->with('error', 'Email hoặc mật khẩu không đúng.');
+    }
+
+    if ($user->is_locked) {
+        return back()->with('error', 'Tài khoản của bạn đã bị khóa.');
+    }
+
+    if (Auth::attempt($credentials, $request->filled('remember'))) {
+        return redirect()->route('home'); // Chuyển hướng sau khi đăng nhập thành công
+    }
+
+    return back()->with('error', 'Email hoặc mật khẩu không đúng.');
+}
     public function create()
     {
         return view('auth.login');
@@ -47,4 +68,20 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate(); 
         $request->session()->regenerateToken(); 
         return redirect('/login'); }
+
+ protected function attemptLogin(Request $request)
+    {
+    $credentials = $request->only('email', 'password');
+
+    $user = \App\Models\User::where('email', $request->email)->first();
+
+    if ($user && $user->is_locked) {
+        return false; // Không cho đăng nhập nếu tài khoản bị khóa
+    }
+
+    return $this->guard()->attempt(
+        $credentials, $request->filled('remember')
+    );
+}
+
 }

@@ -133,66 +133,82 @@
     @endif
 
     <div class="container">
-        <form action="{{ route('cart.checkout') }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="customer_name">Tên khách hàng</label>
-                <input type="text" id="customer_name" name="customer_name" required>
-            </div>
+    <form id="checkout-form" action="{{ route('cart.checkout') }}" method="POST">
+        @csrf
+        <div class="form-group">
+            <label for="customer_name">Tên khách hàng</label>
+            <input type="text" id="customer_name" name="customer_name" required>
+        </div>
 
-            <div class="form-group">
-                <label for="address">Địa chỉ</label>
-                <input type="text" id="address" name="address" required>
-            </div>
+        <div class="form-group">
+            <label for="address">Địa chỉ</label>
+            <input type="text" id="address" name="address" required>
+        </div>
 
-            <div class="form-group">
-                <label for="phone">Số điện thoại</label>
-                <input type="text" id="phone" name="phone" required>
-            </div>
+        <div class="form-group">
+            <label for="phone">Số điện thoại</label>
+            <input type="text" id="phone" name="phone" required>
+        </div>
 
-            <div class="form-group">
-                <label for="payment_method">Phương thức thanh toán</label>
-                <select id="payment_method" name="payment_method" required>
-                    <option value="cod">Thanh toán khi nhận hàng (COD)</option>
-                    <option value="banking">Chuyển khoản ngân hàng</option>
-                    <option value="momo">Ví MoMo</option>
-                    <option value="vnpay">VNPay</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label for="payment_method">Phương thức thanh toán</label>
+            <select id="payment_method" name="payment_method" required onchange="handlePaymentMethod()">
+                <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                <option value="banking">Chuyển khoản ngân hàng</option>
+                <option value="vnpay">VNPay</option>
+            </select>
+        </div>
 
-            <!-- Tóm tắt đơn hàng -->
-            <div class="order-summary">
-                <h3>Chi tiết đơn hàng</h3>
-                <table>
+        <!-- Tóm tắt đơn hàng -->
+        <div class="order-summary">
+            <h3>Chi tiết đơn hàng</h3>
+            <table>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá sau giảm</th>
+                    <th>Thành tiền</th>
+                </tr>
+                @php $total = 0; @endphp
+                @foreach($cartItems as $item)
+                    @php 
+                        $discountAmount = ($item->product->discount_percentage > 0 && now()->between($item->product->discount_start_date, $item->product->discount_end_date)) 
+                                            ? ($item->product->price * $item->product->discount_percentage / 100) 
+                                            : 0;
+                        $finalPrice = $item->product->price - $discountAmount;
+                        $total += $finalPrice * $item->quantity;
+                    @endphp
                     <tr>
-                        <th>Sản phẩm</th>
-                        <th>Số lượng</th>
-                        <th>Giá sau giảm</th>
-                        <th>Thành tiền</th>
+                        <td>{{ $item->product->name }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ number_format($finalPrice, 0, ',', '.') }} VNĐ</td>
+                        <td>{{ number_format($finalPrice * $item->quantity, 0, ',', '.') }} VNĐ</td>
                     </tr>
-                    @php $total = 0; @endphp
-                    @foreach($cartItems as $item)
-                        @php 
-                            // Tính số tiền giảm nếu có
-                            $discountAmount = ($item->product->discount_percentage > 0 && now()->between($item->product->discount_start_date, $item->product->discount_end_date)) 
-                                                ? ($item->product->price * $item->product->discount_percentage / 100) 
-                                                : 0;
-                            $finalPrice = $item->product->price - $discountAmount;
-                            $total += $finalPrice * $item->quantity;
-                        @endphp
-                        <tr>
-                            <td>{{ $item->product->name }}</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($finalPrice, 0, ',', '.') }} VNĐ</td>
-                            <td>{{ number_format($finalPrice * $item->quantity, 0, ',', '.') }} VNĐ</td>
-                        </tr>
-                    @endforeach
-                </table>
-                <p class="total-amount">Tổng tiền: <strong>{{ number_format($total, 0, ',', '.') }} VNĐ</strong></p>
-            </div>
+                @endforeach
+            </table>
+            <p class="total-amount">Tổng tiền: <strong>{{ number_format($total, 0, ',', '.') }} VNĐ</strong></p>
+        </div>
 
-            <button type="submit" class="btn-primary">Đặt hàng</button>
-        </form>
-    </div>
+        <!-- Input hidden để truyền tổng tiền -->
+        <input type="hidden" id="total_amount" name="total_amount" value="{{ $total }}">
+
+
+        <button type="submit" class="btn-primary">Đặt hàng</button>
+    </form>
+</div>
+
+<script>
+    function handlePaymentMethod() {
+        let paymentMethod = document.getElementById("payment_method").value;
+        let checkoutForm = document.getElementById("checkout-form");
+
+        if (paymentMethod === "vnpay") {
+            checkoutForm.action = "{{ route('vnpay.payment') }}";
+        } else {
+            checkoutForm.action = "{{ route('cart.checkout') }}";
+        }
+    }
+</script>
+
 </body>
 </html>
