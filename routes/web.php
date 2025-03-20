@@ -37,7 +37,10 @@ use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\VNPayController;
 use App\Http\Controllers\WeightController;
-
+use Illuminate\Support\Facades\Password;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\ReviewController;
 
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -194,9 +197,46 @@ Route::get('/vnpay/return', [VnpayController::class, 'vnpayReturn'])->name('vnpa
 Route::resource('weights', WeightController::class);
 
 
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email|exists:users,email']);
+
+    Password::sendResetLink($request->only('email'));
+
+    return back()->with('status', 'Chúng tôi đã gửi email đặt lại mật khẩu!');
+})->middleware('guest')->name('password.email');
+
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware('guest')->name('password.reset');
+
+Route::post('/reset-password', function (Request $request) {
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->forceFill(['password' => bcrypt($password)])->save();
+        }
+    );
+
+    return $status === Password::PASSWORD_RESET
+        ? redirect()->route('login')->with('status', 'Mật khẩu đã được đặt lại!')
+        : back()->withErrors(['email' => [__($status)]]);
+})->middleware('guest')->name('password.update');
 
 
+Route::get('/password/change', [ChangePasswordController::class, 'showChangePasswordForm'])->name('password.change.form');
+Route::post('/password/change', [ChangePasswordController::class, 'changePassword'])->name('password.change');
 
+Route::post('/reviews/store', [ReviewController::class, 'store'])->name('reviews.store');
 
 
 

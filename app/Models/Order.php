@@ -9,7 +9,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'total_price', 'status','customer_name', 'address', 'phone'];
+    protected $fillable = ['user_id', 'total_price', 'status', 'customer_name', 'address', 'phone'];
 
     public function user()
     {
@@ -18,11 +18,6 @@ class Order extends Model
 
     public function orderItems()
     {
-        return $this->hasMany(OrderDetail::class);
+        return $this->hasMany(OrderDetail::class); // Liên kết đến OrderDetail (chi tiết đơn hàng)
     }
-    public function product()
-{
-    return $this->belongsTo(Product::class);
-}
-
 }

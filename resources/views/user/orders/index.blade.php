@@ -75,6 +75,15 @@
                                                 <button type="submit" class="btn btn-danger">❌ Hủy đơn hàng</button>
                                             </form>
                                         @endif
+                                        @if($order->status === 'Đã giao')
+    @foreach($order->orderItems as $item)
+        <button class="btn btn-success mt-2" onclick="openReviewModal({{ $order->id }}, {{ $item->product->id }}, '{{ $item->product->name }}')">
+            ⭐ Đánh giá sản phẩm {{ $item->product->name }}
+        </button>
+    @endforeach
+@endif
+
+
                                     </div>
                                 </div>
                             @endif
@@ -85,6 +94,45 @@
         </div>
     </div>
 
+    <!-- Modal Đánh Giá -->
+<div id="reviewModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Đánh giá sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm" method="POST" action="{{ route('reviews.store') }}">
+                    @csrf
+                    <input type="hidden" name="order_id" id="order_id">
+                    <input type="hidden" name="product_id" id="product_id">
+
+                    <p><strong>Sản phẩm:</strong> <span id="product_name"></span></p>
+
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Chọn số sao:</label>
+                        <select class="form-control" name="rating" id="rating" required>
+                            <option value="5">⭐⭐⭐⭐⭐ (5 Sao)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 Sao)</option>
+                            <option value="3">⭐⭐⭐ (3 Sao)</option>
+                            <option value="2">⭐⭐ (2 Sao)</option>
+                            <option value="1">⭐ (1 Sao)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="review_text" class="form-label">Nhận xét của bạn:</label>
+                        <textarea class="form-control" name="review_text" id="review_text" rows="3" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script>
         document.querySelectorAll('.cancel-order-form').forEach(form => {
             form.addEventListener('submit', function (event) {
@@ -94,6 +142,16 @@
                 }
             });
         });
+
+
+        function openReviewModal(orderId, productId, productName) {
+        document.getElementById('order_id').value = orderId;
+        document.getElementById('product_id').value = productId;
+        document.getElementById('product_name').innerText = productName;
+
+        var reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        reviewModal.show();
+    }
     </script>
 </body>
 </html>

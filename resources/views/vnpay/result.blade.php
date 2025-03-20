@@ -21,7 +21,7 @@
     
     <div class="details">
         <p><strong>Mã giao dịch:</strong> {{ $txn_id }}</p>
-        <p><strong>Số tiền:</strong> {{ number_format($amount / 100, 0, ',', '.') }} VND</p>
+        <p><strong>Số tiền:</strong> {{ number_format($amount, 0, ',', '.') }} VND</p>
         <p><strong>Thời gian:</strong> {{ $time }}</p>
     </div>
 

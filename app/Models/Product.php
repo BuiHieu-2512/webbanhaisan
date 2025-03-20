@@ -65,4 +65,8 @@ public function weight()
         return $this->belongsTo(Weight::class, 'weight_id');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'product_id', 'id');
+    }
 }

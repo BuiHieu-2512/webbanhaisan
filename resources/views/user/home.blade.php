@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ĐẢO HẢI SẢN - Trang Chủ</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap JS (nếu chưa có) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -384,6 +387,48 @@
     display: block; /* Hiển thị slide đầu tiên */
 }
 
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.user-dropdown button {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.user-dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-width: 180px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 100;
+}
+
+.user-dropdown .dropdown-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.user-dropdown .dropdown-menu li:hover {
+    background: #f1f1f1;
+}
+
+.user-dropdown .dropdown-menu.show {
+    display: block;
+}
+
 
     </style>
 </head>
@@ -407,19 +452,12 @@
     @endphp
 
     @if(Auth::check())
-        <li>
-            <a href="#">
-                <i class="fas fa-user"></i>
-                Xin chào, {{ auth()->user()->username }}
-            </a>
-        </li>
-
+    
         <li>
             <a href="{{ route('user.news.index') }}">
           <i class="fa-solid fa-newspaper"></i> Tin Tức
             </a>
         </li>
-
 
         <li>
             <!-- Thêm class cart-link để badge hiển thị chồng lên -->
@@ -443,15 +481,29 @@
             </a>
         </li>
 
-
-        <li>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit">
-                    <i class="fas fa-sign-out-alt"></i> Đăng Xuất
-                </button>
-            </form>
-        </li>
+        <li class="nav-item dropdown">
+    <div class="user-dropdown">
+        <button class="dropdown-toggle" id="userDropdown">
+            <i class="fas fa-user"></i> Xin chào, {{ auth()->user()->username }}
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        <ul class="dropdown-menu" id="dropdownMenu">
+            <li>
+                <a class="dropdown-item" href="{{ route('password.change.form') }}">
+                    <i class="fas fa-key"></i> Đổi mật khẩu
+                </a>
+            </li>
+            <li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Đăng Xuất
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</li>
     @else
         <li>
             <a href="{{ route('login') }}">
@@ -498,8 +550,29 @@
 
 </div>
 
-
     </div>
+
+    <div class="container mt-4">
+    <h3>Đánh giá mới nhất</h3>
+    
+    @foreach($products as $product)
+        @if($product->reviews->count() > 0)
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4 class="fw-bold">{{ $product->name }}</h4>
+                    @foreach($product->reviews->take(3) as $review) <!-- Lấy 3 đánh giá mới nhất -->
+                        <div class="border-bottom pb-2 mb-2">
+                            <h5 class="fw-bold">{{ $review->user->username }} - ⭐ {{ $review->rating }}/5</h5>
+                            <p>{{ $review->comment }}</p>
+                            <small class="text-muted">Ngày đánh giá: {{ $review->created_at->format('d/m/Y H:i') }}</small>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    @endforeach
+</div>
+
     <footer>
         <div class="footer-container">
             <div class="footer-section">
@@ -596,7 +669,21 @@ function closeModal() {
     const modal = document.getElementById("myModal");
     modal.style.display = "none";
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdownBtn = document.getElementById("userDropdown");
+    const dropdownMenu = document.getElementById("dropdownMenu");
 
+    dropdownBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        dropdownMenu.classList.toggle("show");
+    });
+
+    document.addEventListener("click", function (event) {
+        if (!dropdownBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.remove("show");
+        }
+    });
+});
 
 </script>
 

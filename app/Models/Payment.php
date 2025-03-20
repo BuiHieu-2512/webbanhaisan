@@ -9,11 +9,8 @@ class Payment extends Model
 {
     use HasFactory;
 
-    /**
-     * Các cột có thể gán giá trị.
-     *
-     * @var array
-     */
+    protected $table = 'payment'; // Đảm bảo đúng tên bảng trong DB
+
     protected $fillable = [
         'order_id',
         'payment_method',
@@ -22,9 +19,6 @@ class Payment extends Model
         'payment_date',
     ];
 
-    /**
-     * Quan hệ với Order (một Payment thuộc về một Order).
-     */
     public function order()
     {
         return $this->belongsTo(Order::class);

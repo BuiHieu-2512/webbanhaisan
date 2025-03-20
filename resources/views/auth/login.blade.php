@@ -105,40 +105,49 @@
 </head>
 <body>
 
-    <div class="container">
-        <h2>Đăng nhập</h2>
+<div class="container">
+    <h2>Đăng nhập</h2>
 
-        <!-- Hiển thị thông báo lỗi -->
-        @if (session('error'))
-            <div class="alert" id="error-alert">
-                <button class="close-btn" onclick="closeAlert()"></button>
-                {{ session('error') }}
-            </div>
-        @endif
+    @if (session('error'))
+        <div class="alert" id="error-alert">
+            <button class="close-btn" onclick="closeAlert()"></button>
+            {{ session('error') }}
+        </div>
+    @endif
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
+    @if (session('status'))
+        <div class="alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}"  autofocus>
-                @error('email')
-                    <span style="color: red;">{{ $message }}</span>
-                @enderror
-            </div>
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
 
-            <div class="form-group">
-                <label for="password">Mật khẩu</label>
-                <input id="password" type="password" name="password" >
-                @error('password')
-                    <span style="color: red;">{{ $message }}</span>
-                @enderror
-            </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}" autofocus>
+            @error('email')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
 
-            <button type="submit">Đăng nhập</button>
-        </form>
-        <a href="{{ route('register') }}" class="register-link">Chưa có tài khoản? Đăng ký tại đây</a>
-    </div>
+        <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input id="password" type="password" name="password">
+            @error('password')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <button type="submit">Đăng nhập</button>
+
+        <a href="{{ route('password.request') }}" class="forgot-password-link">Quên mật khẩu?</a>
+    </form>
+
+    <a href="{{ route('register') }}" class="register-link">Chưa có tài khoản? Đăng ký tại đây</a>
+</div>
+
 
     <script>
         function closeAlert() {

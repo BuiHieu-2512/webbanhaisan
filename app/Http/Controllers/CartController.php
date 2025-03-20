@@ -15,35 +15,49 @@ class CartController extends Controller
 {
     // Thêm sản phẩm vào giỏ hàng
     public function addToCart(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
-        }
-    
-        $product = Product::findOrFail($request->product_id);
-    
-        // Tính giá sau giảm giá (nếu có)
-        $discountAmount = ($product->discount_percentage > 0 && now()->between($product->discount_start_date, $product->discount_end_date)) 
-                            ? ($product->price * $product->discount_percentage / 100) 
-                            : 0;
-    
-        $finalPrice = $product->price - $discountAmount;
-    
-        $cartItem = Cart::where('user_id', Auth::id())->where('product_id', $product->id)->first();
-    
-        if ($cartItem) {
-            $cartItem->increment('quantity');
-        } else {
-            Cart::create([
-                'user_id' => Auth::id(),
-                'product_id' => $product->id,
-                'quantity' => 1,
-                'price' => $finalPrice  // Lưu giá đã giảm vào giỏ hàng
-            ]);
-        }
-    
-        return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+{
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.');
     }
+
+    $product = Product::findOrFail($request->product_id);
+
+    // 🛑 Kiểm tra nếu sản phẩm còn hàng
+    if ($product->stock <= 0) {
+        return redirect()->route('cart.index')->with('error', 'Sản phẩm đã hết hàng!');
+    }
+
+    // ✅ Tính giá sau giảm giá (nếu có)
+    $discountAmount = ($product->discount_percentage > 0 && now()->between($product->discount_start_date, $product->discount_end_date)) 
+                        ? ($product->price * $product->discount_percentage / 100) 
+                        : 0;
+
+    $finalPrice = $product->price - $discountAmount;
+
+    $cartItem = Cart::where('user_id', Auth::id())->where('product_id', $product->id)->first();
+
+    if ($cartItem) {
+        // 🛑 Kiểm tra nếu số lượng trong kho đủ để tăng
+        if ($product->stock < 1) {
+            return redirect()->route('cart.index')->with('error', 'Số lượng sản phẩm trong kho không đủ.');
+        }
+
+        $cartItem->increment('quantity');
+    } else {
+        Cart::create([
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+            'quantity' => 1,
+            'price' => $finalPrice  // Lưu giá đã giảm vào giỏ hàng
+        ]);
+    }
+
+    // ✅ Giảm số lượng sản phẩm trong kho
+    $product->decrement('stock');
+
+    return redirect()->route('cart.index')->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+}
+
     
 
     // Hiển thị giỏ hàng
@@ -55,12 +69,21 @@ class CartController extends Controller
 
     // Xóa sản phẩm khỏi giỏ hàng
     public function removeFromCart($id)
-    {
-        $cartItem = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        $cartItem->delete();
+{
+    $cartItem = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
-        return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
-    }
+    // ✅ Tìm sản phẩm tương ứng
+    $product = Product::findOrFail($cartItem->product_id);
+
+    // ✅ Cộng lại số lượng vào kho
+    $product->increment('stock', $cartItem->quantity);
+
+    // ✅ Xóa sản phẩm khỏi giỏ hàng
+    $cartItem->delete();
+
+    return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng và cập nhật lại số lượng trong kho!');
+}
+
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng
     public function update(Request $request, $id)
@@ -90,82 +113,92 @@ class CartController extends Controller
 
     // Xử lý thanh toán và tạo đơn hàng
     public function checkout(Request $request)
-    {
-        $user = Auth::user();
-        $cartItems = Cart::where('user_id', $user->id)->with('product')->get();
-    
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
-        }
-    
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|regex:/^0[0-9]{9}$/'
-        ]);
-    
-        DB::beginTransaction();
-        try {
-            $totalPrice = 0;
-            // Tính tổng tiền dựa trên giá đã giảm của từng sản phẩm
-            foreach ($cartItems as $item) {
-                $product = $item->product;
-                $discountAmount = ($product->discount_percentage > 0 &&
-                                   now()->between($product->discount_start_date, $product->discount_end_date))
-                    ? ($product->price * $product->discount_percentage / 100)
-                    : 0;
-                $finalPrice = $product->price - $discountAmount;
-                $totalPrice += $finalPrice * $item->quantity;
-            }
-    
-            // Tạo đơn hàng mới
-            $order = Order::create([
-                'user_id' => $user->id,
-                'total_price' => $totalPrice,
-                'status' => 'Đang xử lý',
-                'customer_name' => $request->customer_name,
-                'address' => $request->address,
-                'phone' => $request->phone,
-            ]);
-    
-            $orderDetails = [];
-            foreach ($cartItems as $item) {
-                $product = $item->product;
-                if ($product->stock < $item->quantity) {
-                    return back()->with('error', 'Sản phẩm ' . $product->name . ' không đủ hàng trong kho.');
-                }
-    
-                // Giảm số lượng tồn kho
-                $product->decrement('stock', $item->quantity);
-    
-                // Tính lại giá đã giảm cho sản phẩm này
-                $discountAmount = ($product->discount_percentage > 0 &&
-                                   now()->between($product->discount_start_date, $product->discount_end_date))
-                    ? ($product->price * $product->discount_percentage / 100)
-                    : 0;
-                $finalPrice = $product->price - $discountAmount;
-    
-                $orderDetails[] = [
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'quantity' => $item->quantity,
-                    'price' => $finalPrice,
-                ];
-            }
-    
-            // Lưu toàn bộ chi tiết đơn hàng một lần
-            OrderDetail::insert($orderDetails);
-    
-            // Xóa giỏ hàng sau khi đặt hàng thành công
-            Cart::where('user_id', $user->id)->delete();
-    
-            DB::commit();
-            return redirect()->route('cart.index')->with('success', 'Đặt hàng thành công!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Có lỗi xảy ra khi đặt hàng.');
-        }
+{
+    $user = Auth::user();
+    $cartItems = Cart::where('user_id', $user->id)->with('product')->get();
+
+    if ($cartItems->isEmpty()) {
+        return redirect()->route('cart.index')->with('error', 'Giỏ hàng trống.');
     }
+
+    $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'address' => 'required|string|max:255',
+        'phone' => 'required|regex:/^0[0-9]{9}$/'
+    ]);
+
+    DB::beginTransaction();
+    try {
+        $totalPrice = 0;
+        foreach ($cartItems as $item) {
+            $product = $item->product;
+            $discountAmount = ($product->discount_percentage > 0 &&
+                               now()->between($product->discount_start_date, $product->discount_end_date))
+                ? ($product->price * $product->discount_percentage / 100)
+                : 0;
+            $finalPrice = $product->price - $discountAmount;
+            $totalPrice += $finalPrice * $item->quantity;
+        }
+
+        // Tạo đơn hàng mới
+        $order = Order::create([
+            'user_id' => $user->id,
+            'total_price' => $totalPrice,
+            'status' => 'Đang xử lý',
+            'customer_name' => $request->customer_name,
+            'address' => $request->address,
+            'phone' => $request->phone,
+        ]);
+
+        $orderDetails = [];
+        foreach ($cartItems as $item) {
+            $product = $item->product;
+            if ($product->stock < $item->quantity) {
+                return back()->with('error', 'Sản phẩm ' . $product->name . ' không đủ hàng trong kho.');
+            }
+
+            // Giảm số lượng tồn kho
+            $product->decrement('stock', $item->quantity);
+
+            // Tính lại giá đã giảm
+            $discountAmount = ($product->discount_percentage > 0 &&
+                               now()->between($product->discount_start_date, $product->discount_end_date))
+                ? ($product->price * $product->discount_percentage / 100)
+                : 0;
+            $finalPrice = $product->price - $discountAmount;
+
+            $orderDetails[] = [
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => $item->quantity,
+                'price' => $finalPrice,
+            ];
+        }
+
+        // Lưu toàn bộ chi tiết đơn hàng một lần
+        OrderDetail::insert($orderDetails);
+
+        // Lưu thông tin thanh toán vào bảng payments
+        Payment::create([
+            'order_id' => $order->id,
+            'payment_method' => 'COD', // Thay bằng phương thức thanh toán thực tế (VNPay, PayPal, etc.)
+            'payment_status' => 'Chưa thanh toán', // Cập nhật trạng thái sau khi thanh toán thành công
+            'transaction_id' => null, // Đối với thanh toán online, có thể cập nhật sau
+            'payment_date' => null, // Cập nhật khi thanh toán thành công
+        ]);
+
+        // Xóa giỏ hàng sau khi đặt hàng thành công
+        Cart::where('user_id', $user->id)->delete();
+
+        DB::commit();
+        return redirect()->route('cart.index')->with('success', 'Đặt hàng thành công!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        dd($e->getMessage()); // Xem lỗi chi tiết
+        return redirect()->back()->with('error', 'Có lỗi xảy ra khi đặt hàng.');
+    }
+}
+
     
 
     // Hủy đơn hàng và hoàn lại số lượng sản phẩm
