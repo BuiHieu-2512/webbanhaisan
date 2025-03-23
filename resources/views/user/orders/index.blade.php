@@ -1,105 +1,77 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Sử Mua Hải Sản</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <style>
-        body {
-            background-color: #f0f8ff;
-        }
-        .card {
-            transition: transform 0.3s ease-in-out;
-        }
-        .card:hover {
-            transform: scale(1.02);
-        }
-        .btn-danger {
-            transition: background-color 0.3s;
-        }
-        .btn-danger:hover {
-            background-color: darkred;
-        }
-        .order-columns {
-            display: flex;
-            gap: 20px;
-        }
-        .order-column {
-            flex: 1; 
-        }
-        .btn-back {
-            display: inline-block;
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .btn-back:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container mt-4">
-        <a href="{{ route('user.dashboard') }}" class="btn-back">⬅ Quay lại Trang Chủ</a>
-        <h2 class="text-primary text-center">🐟 Lịch Sử Mua Hải Sản 🦐</h2>
-        <div class="order-columns">
-            @foreach(['Đang xử lý', 'Đã duyệt', 'Đang giao', 'Đã giao', 'Đã hủy'] as $status)
-                <div class="order-column">
-                    <h4 class="text-warning">🕒 Đơn Hàng {{ $status }}</h4>
-                    <div id="{{ str_replace(' ', '-', strtolower($status)) }}-orders">
+@extends('layouts.user')
+
+@section('content')
+
+<nav class="breadcrumb px-4 py-2" style="background-color: #f8f9fa; border-radius: 5px;">
+        <a href="{{ route('user.dashboard') }}" class="breadcrumb-item" style="color: #007bff; text-decoration: none; font-weight: bold;">Home</a>
+        <span class="breadcrumb-separator" style="font-weight: bold;"> >> </span>
+        <span class="breadcrumb-item active" style="color: #555; font-weight: bold;">Lịch Sử Mua Hàng</span>
+    </nav>
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary">🛒 Lịch Sử Mua Hải Sản 🐠</h2>
+    <div class="row">
+        @foreach(['Đang xử lý', 'Đã duyệt', 'Đang giao', 'Đã giao', 'Đã hủy'] as $status)
+            <div class="col-md-6 mb-4 order-status" id="status-{{ Str::slug($status) }}">
+                <div class="card border-info shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">
+                            @if($status === 'Đang xử lý') ⏳
+                            @elseif($status === 'Đã duyệt') ✅
+                            @elseif($status === 'Đang giao') 🚚
+                            @elseif($status === 'Đã giao') 🎁
+                            @elseif($status === 'Đã hủy') ❌
+                            @endif
+                            {{ $status }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
                         @foreach($orders as $order)
                             @if($order->status === $status)
-                                <div class="card mb-3 shadow-sm border-primary order-card" data-id="{{ $order->id }}">
-                                    <div class="card-body">
-                                        <h5 class="text-success">💰 Đơn hàng #{{ $order->id }}</h5>
-                                        <ul class="list-group mt-2">
-                                            @foreach($order->orderItems as $item)
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <span class="fw-bold">{{ $item->product->name }}</span> - {{ $item->quantity }} x {{ number_format($item->price, 0, ',', '.') }} VND
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                        <p class="mt-2 fw-bold text-danger">💵 Tổng: {{ number_format($order->total_price, 0, ',', '.') }} VND</p>
-                                        @if($order->status === 'Đang xử lý')
-                                            <form class="cancel-order-form" action="{{ route('orders.cancel', $order->id) }}" method="POST" data-id="{{ $order->id }}">
-                                                @csrf
-                                                @method('POST')
-                                                <button type="submit" class="btn btn-danger">❌ Hủy đơn hàng</button>
-                                            </form>
-                                        @endif
-                                        @if($order->status === 'Đã giao')
-    @foreach($order->orderItems as $item)
-        <button class="btn btn-success mt-2" onclick="openReviewModal({{ $order->id }}, {{ $item->product->id }}, '{{ $item->product->name }}')">
-            ⭐ Đánh giá sản phẩm {{ $item->product->name }}
-        </button>
-    @endforeach
-@endif
-
-
-                                    </div>
+                                <div class="border-bottom pb-3 mb-3 order-item" id="order-{{ $order->id }}">
+                                    <h6 class="text-success">💰 #{{ $order->id }} - Tổng: 
+                                        <span class="text-danger">{{ number_format($order->total_price, 0, ',', '.') }} VND</span>
+                                    </h6>
+                                    <ul class="list-group">
+                                        @foreach($order->orderItems as $item)
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>🐠 {{ $item->product->name }} (x{{ $item->quantity }})</span>
+                                                <strong>{{ number_format($item->price, 0, ',', '.') }} VND</strong>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                    @if($order->status === 'Đang xử lý')
+                                        <form method="POST" action="{{ route('orders.cancel', $order->id) }}" class="mt-2 cancel-order-form">
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger btn-sm">❌ Hủy đơn</button>
+                                        </form>
+                                    @endif
+                                    @if($order->status === 'Đã giao')
+                                        @foreach($order->orderItems as $item)
+                                            <button class="btn btn-success btn-sm mt-2 review-btn" 
+                                                data-order-id="{{ $order->id }}" 
+                                                data-product-id="{{ $item->product->id }}" 
+                                                data-product-name="{{ $item->product->name }}">
+                                                ⭐ Đánh giá
+                                            </button>
+                                        @endforeach
+                                    @endif
                                 </div>
                             @endif
                         @endforeach
                     </div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
     </div>
+</div>
 
-    <!-- Modal Đánh Giá -->
+<!-- Modal Đánh Giá -->
 <div id="reviewModal" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Đánh giá sản phẩm</h5>
+                <h5 class="modal-title">⭐ Đánh giá sản phẩm</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -107,9 +79,7 @@
                     @csrf
                     <input type="hidden" name="order_id" id="order_id">
                     <input type="hidden" name="product_id" id="product_id">
-
                     <p><strong>Sản phẩm:</strong> <span id="product_name"></span></p>
-
                     <div class="mb-3">
                         <label for="rating" class="form-label">Chọn số sao:</label>
                         <select class="form-control" name="rating" id="rating" required>
@@ -120,38 +90,27 @@
                             <option value="1">⭐ (1 Sao)</option>
                         </select>
                     </div>
-
                     <div class="mb-3">
-                        <label for="review_text" class="form-label">Nhận xét của bạn:</label>
+                        <label for="review_text" class="form-label">Nhận xét:</label>
                         <textarea class="form-control" name="review_text" id="review_text" rows="3" required></textarea>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                    <button type="submit" class="btn btn-primary">📝 Gửi đánh giá</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-    <script>
-        document.querySelectorAll('.cancel-order-form').forEach(form => {
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-                if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
-                    this.submit();
-                }
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".review-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                document.getElementById('order_id').value = this.dataset.orderId;
+                document.getElementById('product_id').value = this.dataset.productId;
+                document.getElementById('product_name').innerText = this.dataset.productName;
+                new bootstrap.Modal(document.getElementById('reviewModal')).show();
             });
         });
-
-
-        function openReviewModal(orderId, productId, productName) {
-        document.getElementById('order_id').value = orderId;
-        document.getElementById('product_id').value = productId;
-        document.getElementById('product_name').innerText = productName;
-
-        var reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
-        reviewModal.show();
-    }
-    </script>
-</body>
-</html>
+    });
+</script>
+@endsection

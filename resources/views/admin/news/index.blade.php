@@ -1,59 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Danh sách Tin Tức</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container-fluid {
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #343a40;
-            margin-bottom: 30px;
-        }
-        .btn-custom {
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .btn-custom:hover {
-            opacity: 0.8;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #dee2e6;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .action-buttons a, .action-buttons button {
-            margin-right: 10px;
-        }
-        .alert-success {
-            color: green;
-        }
-    </style>
-</head>
-<body>
+@extends('layouts.admin')
+
+@section('content')
 <div class="container-fluid">
     <a class="btn btn-secondary" href="{{route('admin.dashboard')}}"><i class="fas fa-arrow-left"></i> Quay lại Trang Chủ</a>
     <h1>Danh sách Tin Tức</h1>
@@ -62,7 +9,12 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('news.create') }}" class="btn btn-custom"><i class="fas fa-plus"></i> Thêm Tin Mới</a>
+    <a href="{{ route('news.create') }}" class="btn btn-custom" 
+   style="float: right; margin-bottom: 20px; margin-top: 10px;">
+   <i class="fas fa-plus"></i> Thêm Tin Mới
+</a>
+<div style="clear: both;"></div> <!-- Đảm bảo không bị lỗi bố cục -->
+
 
     <table class="table table-hover">
         <thead>
@@ -94,10 +46,54 @@
         </tbody>
     </table>
 </div>
+<style>
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        margin-top: 50px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .btn-custom {
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .btn-custom:hover {
+        opacity: 0.8;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid #dee2e6;
+    }
+    th, td {
+        padding: 12px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .action-buttons a, .action-buttons button {
+        margin-right: 10px;
+    }
+    .alert-success {
+        color: green;
+    }
+</style>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-</body>
-</html>
+@endsection
+
+

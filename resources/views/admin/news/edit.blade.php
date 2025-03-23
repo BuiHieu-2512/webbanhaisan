@@ -1,104 +1,130 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Sửa Tin Tức</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container-fluid {
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #343a40;
-            margin-bottom: 30px;
-        }
-        .btn-custom {
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .btn-custom:hover, .btn-secondary:hover {
-            opacity: 0.8;
-        }
-        .form-group label {
-            font-weight: bold;
-            color: #495057;
-        }
-        .form-control {
-            margin-bottom: 15px;
-        }
-        .img-thumbnail {
-            margin-bottom: 10px;
-        }
-        .alert-danger {
-            color: red;
-        }
-        .alert-success {
-            color: green;
-        }
-    </style>
-</head>
-<body>
-<div class="container-fluid">
-    <a href="{{ route('news.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Quay lại</a>
-    <h1>Sửa Tin Tức</h1>
+@extends('layouts.admin')
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>- {{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@section('content')
+<div class="container-fluid d-flex justify-content-center">
+    <div class="card shadow-lg border-0 mt-4" style="width: 60%; border-radius: 10px;">
+        <div class="card-body p-4">
+            <a href="{{ route('news.index') }}" class="btn btn-secondary mb-3">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
 
-    <form action="{{ route('news.update', $news->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-        <div class="form-group">
-            <label for="title">Tiêu đề</label>
-            <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $news->title) }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="content">Nội dung</label>
-            <textarea class="form-control" id="content" name="content" rows="5" required>{{ old('content', $news->content) }}</textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="image">Ảnh minh họa</label>
-            @if($news->image)
-                <div>
-                    <img src="{{ asset('storage/'.$news->image) }}" alt="" width="100" class="img-thumbnail">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>- {{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
-            <input type="file" class="form-control-file" id="image" name="image">
-        </div>
 
-        <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="is_published" name="is_published" value="1" {{ $news->is_published ? 'checked' : '' }}>
-            <label class="form-check-label" for="is_published">Xuất bản</label>
-        </div>
+            <form action="{{ route('news.update', $news->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                
+                <div class="form-group mb-4">
+                    <label for="title">Tiêu đề</label>
+                    <input type="text" class="form-control py-2" id="title" name="title" value="{{ old('title', $news->title) }}" required>
+                </div>
 
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Cập nhật</button>
-    </form>
+                <div class="form-group mb-4">
+                    <label for="content">Nội dung</label>
+                    <textarea class="form-control py-2" id="content" name="content" rows="5" required>{{ old('content', $news->content) }}</textarea>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="image">Ảnh minh họa</label>
+                    @if($news->image)
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/'.$news->image) }}" alt="Hình ảnh tin tức" class="img-thumbnail" width="150">
+                        </div>
+                    @endif
+                    <input type="file" class="form-control-file mt-2" id="image" name="image">
+                </div>
+
+                <div class="form-group form-check mb-4">
+                    <input type="checkbox" class="form-check-input" id="is_published" name="is_published" value="1" {{ $news->is_published ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_published">Xuất bản</label>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-3" style="font-size: 18px; height: 30px;">
+    <i class="fas fa-save"></i> Cập nhật
+</button>
+
+            </form>
+        </div>
+    </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
-</body>
-</html>
+<style>
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        margin-top: 50px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    /* Hiển thị lỗi */
+.alert {
+    font-size: 1rem;
+    border-radius:15px;
+    padding: 15px;
+}
+
+/* Form Card */
+.card {
+    border-radius: 62px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Label */
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+/* Input và Textarea */
+.form-control {
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 18px;
+    margin-top: 16px;
+}
+
+/* Giãn cách các nhóm input */
+.form-group {
+    margin-bottom: 50px;
+}
+
+/* Checkbox */
+.form-check-label {
+    font-size: 1rem;
+    margin-left: 15px;
+}
+
+/* Nút hành động */
+.btn-primary, .btn-secondary {
+    font-size: 1.1rem;
+    border-radius: 18px;
+    padding: 12px 20px;
+}
+
+/* Hover Button */
+.btn-primary:hover, .btn-secondary:hover {
+    opacity: 0.9;
+}
+.title-news {
+    font-size: 1.8rem; /* Giảm kích thước chữ */
+    font-weight: bold;
+    text-transform: uppercase;
+}
+</style>
+@endsection

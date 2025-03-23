@@ -10,6 +10,8 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment; // Thêm dòng này
 use App\Models\OrderDetail;
+use App\Models\Category;
+
 
 class CartController extends Controller
 {
@@ -62,10 +64,15 @@ class CartController extends Controller
 
     // Hiển thị giỏ hàng
     public function showCart()
-    {
-        $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
-        return view('user.cart.index', compact('cartItems'));
-    }
+{
+    $cartItems = Cart::where('user_id', Auth::id())->with('product')->get();
+    
+    // Lấy danh sách danh mục nếu cần
+    $categories = Category::all(); 
+
+    return view('user.cart.index', compact('cartItems', 'categories'));
+}
+
 
     // Xóa sản phẩm khỏi giỏ hàng
     public function removeFromCart($id)
@@ -89,15 +96,34 @@ class CartController extends Controller
     public function update(Request $request, $id)
     {
         $cartItem = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-
+        $product = Product::findOrFail($cartItem->product_id);
+    
         $request->validate([
             'quantity' => 'required|integer|min:1'
         ]);
-
-        $cartItem->update(['quantity' => $request->quantity]);
-
+    
+        $newQuantity = $request->quantity;
+        $oldQuantity = $cartItem->quantity;
+        $difference = $newQuantity - $oldQuantity; // Tính chênh lệch số lượng
+    
+        // Kiểm tra nếu tăng số lượng thì phải trừ kho
+        if ($difference > 0) {
+            if ($product->stock < $difference) {
+                return back()->with('error', 'Không đủ hàng trong kho!');
+            }
+            $product->decrement('stock', $difference);
+        } 
+        // Nếu giảm số lượng thì cộng lại kho
+        elseif ($difference < 0) {
+            $product->increment('stock', abs($difference));
+        }
+    
+        // Cập nhật số lượng trong giỏ hàng
+        $cartItem->update(['quantity' => $newQuantity]);
+    
         return redirect()->route('cart.index')->with('success', 'Đã cập nhật số lượng sản phẩm.');
     }
+    
 
     // Hiển thị trang thanh toán
     public function checkoutForm()

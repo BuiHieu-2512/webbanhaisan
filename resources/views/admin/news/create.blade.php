@@ -1,63 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Thêm Tin Tức</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container-fluid {
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #343a40;
-            margin-bottom: 30px;
-        }
-        .form-group label {
-            font-weight: bold;
-            color: #495057;
-        }
-        .back-btn {
-            background-color: #6c757d;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-        .btn-primary:hover, .back-btn:hover {
-            opacity: 0.8;
-        }
-        .error-list {
-            color: red;
-            padding: 10px;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-<div class="container-fluid">
-    <h1>Thêm Tin Tức</h1>
-    
+@extends('layouts.admin')
+
+@section('content')
+
+
+    <!-- Hiển thị lỗi -->
     @if ($errors->any())
-        <div class="error-list">
-            <ul>
+        <div class="alert alert-danger mb-4 p-3">
+            <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -65,34 +14,124 @@
         </div>
     @endif
 
-    <form action="{{ route('news.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="form-group">
-            <label for="title">Tiêu đề</label>
-            <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}" required>
-        </div>
+    <!-- Form -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+            <form action="{{ route('news.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
-        <div class="form-group">
-            <label for="content">Nội dung</label>
-            <textarea class="form-control" id="content" name="content" rows="5" required>{{ old('content') }}</textarea>
-        </div>
+                <!-- Tiêu đề -->
+                <div class="form-group mb-5">
+                    <label for="title" class="font-weight-bold text-primary mb-2"><i class="fas fa-heading"></i> Tiêu đề</label>
+                    <input type="text" class="form-control border-primary rounded p-3" id="title" name="title" value="{{ old('title') }}" required>
+                </div>
 
-        <div class="form-group">
+                <!-- Nội dung -->
+                <div class="form-group mb-5">
+                    <label for="content" class="font-weight-bold text-primary mb-2"><i class="fas fa-align-left"></i> Nội dung</label>
+                    <textarea class="form-control border-primary rounded p-3" id="content" name="content" rows="7" required>{{ old('content') }}</textarea>
+                </div>
+
+                <!-- Ảnh minh họa -->
+                <div class="form-group">
             <label for="image">Ảnh minh họa (nếu có)</label>
             <input type="file" class="form-control-file" id="image" name="image">
         </div>
 
-        <div class="form-group form-check">
-            <input type="checkbox" class="form-check-input" id="is_published" name="is_published" value="1">
-            <label class="form-check-label" for="is_published">Xuất bản</label>
+                <!-- Xuất bản -->
+                <div class="form-group form-check mb-5">
+                    <input type="checkbox" class="form-check-input" id="is_published" name="is_published" value="1">
+                    <label class="form-check-label text-primary" for="is_published"><i class=""></i> Xuất bản</label>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ route('news.index') }}" class="btn btn-secondary px-4 py-2">
+                        <i class=""></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-save"></i> Lưu
+                    </button>
+                </div>
+            </form>
         </div>
-        <a href="{{ route('news.index') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Quay lại</a>
-        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Lưu</button>
-    </form>
+     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+<style>
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        margin-top: 50px;
+    }
+
+/* Tiêu đề chính */
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Hiển thị lỗi */
+.alert {
+    font-size: 1rem;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+/* Form Card */
+.card {
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Label */
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+/* Input và Textarea */
+.form-control {
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+/* Giãn cách các nhóm input */
+.form-group {
+    margin-bottom: 40px;
+}
+
+/* Checkbox */
+.form-check-label {
+    font-size: 1rem;
+    margin-left: 5px;
+}
+
+/* Nút hành động */
+.btn-primary, .btn-secondary {
+    font-size: 1.1rem;
+    border-radius: 8px;
+    padding: 12px 20px;
+}
+
+/* Hover Button */
+.btn-primary:hover, .btn-secondary:hover {
+    opacity: 0.9;
+}
+.title-news {
+    font-size: 1.8rem; /* Giảm kích thước chữ */
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+</style>
+@endsection

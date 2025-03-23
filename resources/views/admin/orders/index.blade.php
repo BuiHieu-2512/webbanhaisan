@@ -1,114 +1,113 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách đơn hàng</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            background: url('https://source.unsplash.com/1600x900/?seafood,fish,ocean') no-repeat center center/cover;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 30px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        .btn-back {
-            display: inline-block;
-            padding: 8px 15px;
-            background: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-back:hover {
-            background: #0056b3;
-        }
-        h2 {
-            color: #35424a;
-        }
-        .table {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .table th {
-            background: #007bff !important;
-            color: white;
-            text-align: center;
-        }
-        .btn-sm {
-            border-radius: 5px;
-        }
-        .status-pending {
-            color: #ff9800;
-            font-weight: bold;
-        }
-        .status-completed {
-            color: #28a745;
-            font-weight: bold;
-        }
-        .status-cancelled {
-            color: #dc3545;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <a href="{{ route('admin.dashboard') }}" class="btn-back">⬅ Quay lại Trang Chủ</a>
-        <h2 class="text-center mt-3"><i class="fa-solid fa-receipt"></i> Danh sách đơn hàng</h2>
+@extends('layouts.admin')
 
-        <table class="table table-bordered mt-3">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Khách hàng</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($orders as $order)
-                    <tr>
-                        <td class="text-center">{{ $order->id }}</td>
-                        <td>{{ $order->customer_name }}</td>
-                        <td class="text-end">{{ number_format($order->total_price, 0, ',', '.') }} VND</td>
-                        <td class="text-center">
-                            @php $status = trim((string) $order->status); @endphp
-                            @if ($status == 'Chờ xử lý')
-                                <span class="status-pending">🕒 {{ $status }}</span>
-                            @elseif ($status == 'Hoàn thành')
-                                <span class="status-completed">✅ {{ $status }}</span>
-                            @elseif ($status == 'Hủy')
-                                <span class="status-cancelled">❌ {{ $status }}</span>
-                            @else
-                                <span>{{ $status }}</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-info btn-sm"><i class="fa-solid fa-eye"></i> Xem</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Phân trang -->
-        <div class="d-flex justify-content-center mt-3">
-            {{ $orders->links() }}
-        </div>
+@section('content')
+<div class="container my-5">
+    <!-- Nút quay lại -->
+    <div class="d-flex justify-content-center mb-4">
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-lg btn-primary shadow-lg px-4 py-2 rounded-pill d-flex align-items-center gap-2">
+            <i class="fa-solid fa-house-chimney fs-5"></i>
+            <span class="fw-bold">Quay lại Trang Chủ</span>
+        </a>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
-</body>
-</html>
+
+    <!-- Card danh sách đơn hàng -->
+    <div class="d-flex justify-content-center">
+    <div class="card shadow-lg border-0 mb-5" style="width: 90%; margin-left: 34%;">
+        <div class="card-header bg-primary text-white text-center">
+            <h3 class="mb-0">
+                <i class="fa-solid fa-receipt"></i> Danh sách đơn hàng
+            </h3>
+        </div>
+        </div>
+            <div class="card-body">
+                <!-- Bảng danh sách đơn hàng -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered text-center align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="text-center"><i class="fa-solid fa-hashtag"></i> ID</th>
+                                <th class="text-center"><i class="fa-solid fa-user"></i> Khách hàng</th>
+                                <th class="text-center"><i class="fa-solid fa-money-bill-wave"></i> Tổng tiền</th>
+                                <th class="text-center"><i class="fa-solid fa-info-circle"></i> Trạng thái</th>
+                                <th class="text-center"><i class="fa-solid fa-cogs"></i> Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($orders as $order)
+                                <tr>
+                                    <td class="align-middle">{{ $order->id }}</td>
+                                    <td class="align-middle">
+                                        <i class="fa-solid fa-user-circle text-info"></i> {{ $order->customer_name }}
+                                    </td>
+                                    <td class="align-middle fw-bold text-success">
+                                        <i class="fa-solid fa-coins"></i>
+                                        {{ number_format($order->total_price, 0, ',', '.') }} VND
+                                    </td>
+                                    <td class="align-middle">
+                                        @php $status = trim((string) $order->status); @endphp
+                                        @if ($status == 'Chờ xử lý')
+                                            <span class="badge bg-warning text-dark px-3 py-2">
+                                                <i class="fa-solid fa-hourglass-half"></i> {{ $status }}
+                                            </span>
+                                        @elseif ($status == 'Hoàn thành')
+                                            <span class="badge bg-success px-3 py-2">
+                                                <i class="fa-solid fa-check"></i> {{ $status }}
+                                            </span>
+                                        @elseif ($status == 'Hủy')
+                                            <span class="badge bg-danger px-3 py-2">
+                                                <i class="fa-solid fa-times"></i> {{ $status }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary px-3 py-2">{{ $status }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-info">
+                                            <i class="fa-solid fa-eye"></i> Xem
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Phân trang -->
+                <div class="d-flex justify-content-center">
+                    {{ $orders->links() }}
+                </div>
+            </div>
+        </div>
+        
+</div>
+
+<!-- CSS chỉnh lại -->
+<style>
+    .table {
+        width: 100%;
+        margin: auto;
+    }
+
+    .table th, .table td {
+        text-align: center !important;
+        padding: 10px; /* Tăng khoảng cách giữa các dòng */
+    }
+
+    .card {
+        max-width: 30%;
+        margin: auto;
+        padding: 10px; /* Tăng khoảng cách bên trong card */
+    }
+
+    .card-header {
+        padding: 10px;
+    }
+
+    .table-responsive {
+        padding: 5px; /* Thêm khoảng cách giữa bảng và khung */
+    }
+</style>
+
+@endsection

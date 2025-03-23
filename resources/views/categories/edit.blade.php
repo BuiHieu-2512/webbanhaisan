@@ -1,79 +1,90 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh Sửa Danh Mục</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 1em 0;
-        }
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        label {
-            font-weight: bold;
-        }
-        input[type="text"], textarea, input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .error {
-            color: red;
-            font-size: 0.875em;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #1a252f;
-        }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background-color: #2c3e50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .back-btn:hover {
-            background-color: #1a252f;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Chỉnh Sửa Danh Mục</h1>
-    </header>
-    <div class="container">
+@extends('layouts.admin')
+
+@section('styles')
+<style>
+     .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: #fff;
+    }
+
+    header {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
         
+    }
+
+    .form-wrapper {
+        width: 100%;
+        max-width: 600px; /* Giới hạn chiều rộng form */
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    .error {
+        display: block;
+        color: #dc3545;
+        font-size: 12px;
+        margin-top: -15px;
+        margin-bottom: 10px;
+    }
+
+    button, .back-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin-right: 10px;
+    }
+
+    button:hover, .back-btn:hover {
+        background: #0056b3;
+    }
+
+    .form-actions {
+        text-align: right; /* Căn nút về bên phải */
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="container">
+    <div class="form-wrapper">
+        <header>
+            <h1>Chỉnh Sửa Danh Mục</h1>
+        </header>
         <form method="POST" action="{{ route('categories.update', $category->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -98,11 +109,11 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
-            <div>
-            <a href="{{ route('categories.index') }}" class="back-btn">Quay lại </a>
+            <div class="form-actions">
+                <a href="{{ route('categories.index') }}" class="back-btn">Quay lại</a>
                 <button type="submit">Cập Nhật</button>
             </div>
         </form>
     </div>
-</body>
-</html>
+</div>
+@endsection
