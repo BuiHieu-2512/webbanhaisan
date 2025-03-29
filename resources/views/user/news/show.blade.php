@@ -15,17 +15,23 @@
         <div class="card-body">
             <h1 class="mb-3 text-primary text-center"> {{ $news->title }} </h1>
 
-            @if($news->image)
-                <div class="text-center">
-                    <img src="{{ asset('storage/' . $news->image) }}" alt="{{ $news->title }}" class="img-fluid rounded">
-                </div>
-            @endif
+            <div class="d-flex align-items-start">
+    <!-- Ảnh bên trái -->
+    @if($news->image)
+        <div class="me-3">
+            <img src="{{ asset('storage/' . $news->image) }}" alt="{{ $news->title }}" class="img-fluid rounded" style="max-width: 250px; height: auto;">
+        </div>
+    @endif
 
-            <p class="text-muted mt-3"><strong>📅 Ngày đăng:</strong> {{ $news->created_at->format('d/m/Y H:i') }}</p>
+    <!-- Nội dung bên phải -->
+    <div>
+        <p class="text-muted"><strong>📅 Ngày đăng:</strong> {{ $news->created_at->format('d/m/Y H:i') }}</p>
+        <div class="news-content p-3 border rounded bg-light">
+            {!! nl2br(e($news->content)) !!}
+        </div>
+    </div>
+</div>
 
-            <div class="news-content p-3 border rounded bg-light">
-                {!! nl2br(e($news->content)) !!}
-            </div>
         </div>
     </div>
 </div>

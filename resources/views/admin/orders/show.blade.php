@@ -122,7 +122,7 @@
         max-width: 100%;
         margin: 0;
         padding: 20px;
-        background: #fff;
+       
     }
 
     .table {

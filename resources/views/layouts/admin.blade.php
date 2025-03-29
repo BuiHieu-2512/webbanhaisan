@@ -95,14 +95,14 @@
     <div class="container">
         <nav>
             <a href="{{ route('admin.dashboard') }}"><i class="fa-solid fa-house"></i> Trang Chủ</a>
-            <a href="{{ route('categories.index') }}"><i class="fa-solid fa-layer-group"></i> Danh mục</a>
-            <a href="{{ route('products.index') }}"><i class="fa-solid fa-fish"></i> Sản phẩm</a>
+            <a href="{{ route('categories.index') }}"><i class="fa-solid fa-layer-group"></i> Danh Mục</a>
+            <a href="{{ route('products.index') }}"><i class="fa-solid fa-fish"></i> Sản Phẩm</a>
             <a href="{{ route('admin.orders.index') }}"><i class="fa-solid fa-receipt"></i> Quản lí Đơn Hàng</a>
-            <a href="{{ route('weights.index') }}"><i class="fa-solid fa-scale-balanced"></i> Quản lí Kích cỡ</a>
-            <a href="{{ route('admin.banners.index') }}"><i class="fa-solid fa-image"></i> Quản lý Banner</a>
-            <a href="{{ route('admin.users.index') }}"><i class="fa-solid fa-users"></i> Quản lý Người Dùng</a>
-            <a href="{{ route('news.index') }}"><i class="fa-solid fa-newspaper"></i> Quản lý Tin Tức</a>
-            <a href="{{ route('admin.contacts.index') }}"><i class="fa-solid fa-address-book"></i> Quản lý Liên Hệ</a>
+            <a href="{{ route('weights.index') }}"><i class="fa-solid fa-scale-balanced"></i> Quản lí Cân Nặng</a>
+            <a href="{{ route('admin.banners.index') }}"><i class="fa-solid fa-image"></i> Quản lí Banner</a>
+            <a href="{{ route('admin.users.index') }}"><i class="fa-solid fa-users"></i> Quản lí Người Dùng</a>
+            <a href="{{ route('news.index') }}"><i class="fa-solid fa-newspaper"></i> Quản lí Tin Tức</a>
+            <a href="{{ route('admin.contacts.index') }}"><i class="fa-solid fa-address-book"></i> Quản lí Liên Hệ</a>
             <!-- Nút Đăng Xuất -->
             <form method="POST" action="{{ route('logout') }}" class="logout-form" id="logout-form">
                 @csrf

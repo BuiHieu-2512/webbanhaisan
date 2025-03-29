@@ -185,34 +185,36 @@
         <button onclick="closeLogoutModal()" style="background: #34495e; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; font-size: 14px;">Hủy</button>
     </div>
 </div>
-    <footer>
-        <div class="container">
-            <div class="footer-container">
-                <div class="footer-section">
-                    <h3>Thông Tin Liên Hệ</h3>
-                    <address style="font-size: 16px; line-height: 1.6; margin-top: 15px;">
-    <strong style="font-size: 18px;">Phố Phượng Trì, Đan Phượng, Hà Nội</strong><br>
-    <span style="color: #007bff; font-weight: bold;">Hotline:</span> 034 552 4280<br>
-    <span style="color: #007bff; font-weight: bold;">Email:</span> hieubienca@gmail.com<br>
-    <a href="https://www.google.com/maps/place/Ngh.+14%2F29+P.+Ph%C6%B0%E1%BB%A3ng+Tr%C3%AC,+tt.+Ph%C3%B9ng,+%C4%90an+Ph%C6%B0%E1%BB%A3ng,+H%C3%A0+N%E1%BB%99i,+Vi%E1%BB%87t+Nam/@21.087675,105.6619986,19z/data=!3m1!4b1!4m6!3m5!1s0x3134564238955499:0xf2ccbb32de9d47b1!8m2!3d21.087675!4d105.6626423!16s%2Fg%2F11j4gx8gcy?hl=vi-VN&entry=ttu&g_ep=EgoyMDI1MDMxOC4wIKXMDSoASAFQAw%3D%3D" 
-       style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; font-weight: bold; border-radius: 5px;"
-       target="_blank"
-       onmouseover="this.style.backgroundColor='#0056b3';"
-       onmouseout="this.style.backgroundColor='#007bff';">
-        📍 Địa chỉ cửa hàng (Click để xem bản đồ)
-    </a>
-</address>
+<footer>
+    <div class="container">
+        <div class="footer-container" style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
+            <div class="footer-section">
+                <h3>Thông Tin Liên Hệ</h3>
+                <address style="font-size: 16px; line-height: 1.6; margin-top: 15px;">
+                    <strong style="font-size: 18px;">Phố Phượng Trì, Đan Phượng, Hà Nội</strong><br>
+                    <span style="color: #007bff; font-weight: bold;">Hotline:</span> 034 552 4280<br>
+                    <span style="color: #007bff; font-weight: bold;">Email:</span> hieubienca@gmail.com<br>
+                    <a href="https://www.google.com/maps/place/Ngh.+14%2F29+P.+Ph%C6%B0%E1%BB%A3ng+Tr%C3%AC,+tt.+Ph%C3%B9ng,+%C4%90an+Ph%C6%B0%E1%BB%A3ng,+H%C3%A0+N%E1%BB%99i,+Vi%E1%BB%87t+Nam" 
+                       style="display: inline-block; margin-top: 10px; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; font-weight: bold; border-radius: 5px;"
+                       target="_blank"
+                       onmouseover="this.style.backgroundColor='#0056b3';"
+                       onmouseout="this.style.backgroundColor='#007bff';">
+                        📍 Địa chỉ cửa hàng (Click để xem bản đồ)
+                    </a>
+                </address>
+            </div>
 
-                </div>
-                <div class="footer-section">
-                    <h3>Chăm Sóc Khách Hàng</h3>
-                    <ul>
-                        <li><a href="#">Hướng Dẫn Mua Hàng</a></li>
-                        <li><a href="#">Bảo Hành & Đổi Trả</a></li>
-                        <li><a href="#">Câu Hỏi Thường Gặp</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
+            <div class="footer-section">
+                <h3>Chăm Sóc Khách Hàng</h3>
+                <ul>
+                    <li><a href="#">Hướng Dẫn Mua Hàng</a></li>
+                    <li><a href="#">Bảo Hành & Đổi Trả</a></li>
+                    <li><a href="#">Câu Hỏi Thường Gặp</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section" style="display: flex; align-items: center;">
+                <div>
                     <h3>Liên Kết Nhanh</h3>
                     <ul>
                         <li><a href="#">Giới Thiệu</a></li>
@@ -221,9 +223,25 @@
                         <li><a href="#">Tuyển Dụng</a></li>
                     </ul>
                 </div>
+                <!-- Mạng xã hội bên cạnh -->
+                <div class="social-links" style="margin-left: 30px; display: flex; gap: 15px;">
+                    <a href="https://www.facebook.com/congtuhieubui" style="color:rgb(27, 2, 221);"><i class="fab fa-facebook fa-2x"></i></a>
+                    <a href="https://www.instagram.com/buihieu_25/" style="color: #E4405F;"><i class="fab fa-instagram fa-2x"></i></a>
+                    <a href="https://www.youtube.com/" style="color: #ff0000;"><i class="fab fa-youtube fa-2x"></i></a>
+                    <a href="https://www.tiktok.com/" style="color: #000000;"><i class="fab fa-tiktok fa-2x"></i></a>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
+
+<!-- Thêm link Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+
+<!-- Thêm link Font Awesome -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Logic hiện tại của bạn vẫn giữ nguyên

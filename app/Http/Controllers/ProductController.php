@@ -13,7 +13,7 @@ class ProductController extends Controller
     // Hiển thị danh sách sản phẩm
     public function index()
     {
-        $products = Product::paginate(3);
+        $products = Product::paginate(5);
         return view('products.index', compact('products'));
     }
 
